@@ -1,4 +1,4 @@
-# 💧 AquaNeuraX — AI Guardian of Industrial Flow  
+# 💧 NeuraAqua — AI Guardian of Industrial Flow  
 
 ### 🧠 Powered by IBM watsonx Orchestrate | Agentic AI for Sustainable Water Infrastructure  
 
