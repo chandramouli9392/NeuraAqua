@@ -1,124 +1,176 @@
-# 💧 NeuroAqua — AI Guardian of Industrial Flow  
+🛠⚡ PumpGuard AI — Industrial Pump Health Prediction System
 
-### 🧠 Powered by IBM watsonx Orchestrate | Agentic AI for Sustainable Water Infrastructure  
+🔥 Powered by Machine Learning • 📊 Predictive Maintenance • 💥 Built by Tenet Σ
 
----
+PumpGuard AI is a smart ML-based system designed to analyze industrial pump health using only 3 core parameters:
 
-## 🌍 Overview  
-**AquaNeuraX** is an **AI-driven orchestration system** that brings neural intelligence to **industrial water management**.  
-It monitors pump data — such as vibration, motor current, and temperature — to predict failures, prevent water waste, and ensure sustainable industrial performance.  
+💠 Vibration (mm/s)
 
-The system uses **IBM watsonx Orchestrate** to automate data analysis, reporting, and maintenance recommendations through **agentic AI workflows**.  
-Each agent acts autonomously but collaborates intelligently — turning reactive maintenance into **proactive sustainability**.  
+🔥 Temperature (°C)
 
----
+⚡ Motor Current (A)
 
-## ⚙️ Core Features  
+It predicts whether a pump is:
 
-| Feature | Description |
-|----------|-------------|
-| 🧩 **Agentic AI** | Autonomous agents analyze, predict, and act using watsonx Orchestrate. |
-| 💧 **Smart Pump Analysis** | Detects inefficiencies, classifies pump health (HEALTHY / WARNING / FAIL). |
-| 📈 **Predictive Maintenance** | Identifies early risk trends to prevent costly downtime. |
-| 🧾 **Automated Reporting** | Generates daily PDF summaries and sends email notifications. |
-| ☁️ **IBM Cloud Integration** | Seamlessly integrates with Cloud Object Storage, Cloud Functions, and Cloudant DB. |
-| 🔍 **Explainable Insights** | Provides transparent reasoning for each AI decision. |
+🟢 HEALTHY
 
----
+🟠 WARNING
 
-## 🧠 Agent Architecture  
+🔴 CRITICAL
 
-1. **Data Analyzer Agent**  
-   - Processes CSV or real-time IoT data.  
-   - Applies rules/ML to classify pump status.  
+This system helps industries reduce downtime, detect risks early, and maintain operational safety — all using simple numerical inputs + ML intelligence.
 
-2. **Predictive Maintenance Agent**  
-   - Detects early warnings and recommends preventive actions.  
+🌟 ✨ Features (Sigma Edition)
 
-3. **Report Agent**  
-   - Generates formatted daily summaries in PDF.  
+🧠 ML-powered Pump Health Classification
 
-4. **Advisory Agent**  
-   - Interacts with users conversationally via watsonx Orchestrate.  
+📈 Failure Risk Score
 
----
+📊 Vibration–Temperature–Current based prediction
 
-## 🔗 Workflow with IBM watsonx Orchestrate  
+🛠 Actionable maintenance recommendations
 
-1️⃣ Upload pump dataset (CSV or IoT feed).  
-2️⃣ Orchestrate triggers **Data Analyzer Agent**.  
-3️⃣ Analyzer outputs JSON results → sent to **Maintenance Agent**.  
-4️⃣ **Report Agent** compiles insights into a PDF summary.  
-5️⃣ **Advisory Agent** communicates results & recommendations to the user.  
+🎛 Clean & modern Streamlit UI
 
----
+⚡ Lightweight & deployable to Streamlit Cloud
 
-## 🧩 Tech Stack  
+🔒 Safe — No external API dependence
 
-- **IBM watsonx Orchestrate** 🧠  
-- **IBM Cloud Object Storage (COS)** ☁️  
-- **IBM Cloud Functions** ⚡  
-- **IBM Cloudant / Db2** 💾  
-- **Watson Studio (optional ML scoring)** 📊  
-- **Python + Pandas** for local testing 🐍  
+🚀 Offline compatible (uses only your trained model)
 
----
+📁 Project Structure (Σ Organized)
+PumpGuard-AI/
+│── app.py                # Streamlit interface
+│── train_model.py        # ML training script
+│── requirements.txt      # Dependencies
+│── data/
+│     └── pumphealth.csv  # Your dataset
+│── model/
+│     ├── pump_model.pkl
+│     ├── scaler.pkl
+│     └── feature_meta.json
+│── README.md
 
-## 💼 Use Case Alignment  
+🧠 How PumpGuard AI Works
+1️⃣ Training the ML Model
 
-**🌐 UN SDG 9:** Industry, Innovation & Infrastructure  
-**💦 UN SDG 6:** Clean Water & Sanitation  
+Uses RandomForestClassifier to learn pump conditions from:
 
-AquaNeuraX enhances infrastructure resilience by preventing breakdowns, conserving water, and ensuring sustainable industrial practices.  
+⚙️ vibration
 
----
+🌡 temperature
 
-## 🚀 How to Run (Hackathon Demo Steps)  
+🔌 current
 
-1️⃣ Open **IBM watsonx Orchestrate** dashboard.  
-2️⃣ Import the AquaNeuraX agent configuration.  
-3️⃣ Upload your sample dataset (`water_pump_health_data.csv`).  
-4️⃣ Trigger workflow: `Run Daily Pump Analysis`.  
-5️⃣ View generated report → check email or COS bucket for output.  
-6️⃣ Ask the agent questions like:  
-   - “Analyze today’s pump performance.”  
-   - “Show pumps at risk of failure.”  
-   - “Summarize energy efficiency trends.”  
+🏷 label (HEALTHY/WARNING/FAIL)
 
----
+Run the training:
 
-## 🧩 Example Query & Response  
+python train_model.py --csv data/pumphealth.csv --out model
 
-**Query:**  
-> “AquaNeuraX, can you check the latest vibration trend for Pump ID P-301?”
 
-**Response:**  
-> ✅ Pump P-301 shows an upward vibration trend (3.1 → 5.4 mm/s).  
-> ⚠️ Early imbalance detected — schedule lubrication within 48 hours.  
-> 📊 Classification: *WARNING*  
+This creates:
 
----
+model/
+  pump_model.pkl
+  scaler.pkl
+  feature_meta.json
 
-## 🤖 Team  
-- Built by innovators for the **IBM Tech Exchange 2025 Hackathon**  
-- Category: *Industry, Innovation, and Infrastructure (SDG 9)*  
+2️⃣ Running the Streamlit App
 
----
+Start the UI:
 
-## 💬 Example Greetings  
-> 💧 “Hello, I’m AquaNeuraX — the Guardian of Industrial Flow. Upload your pump data, and I’ll analyze, predict, and optimize for sustainable water management.”  
+streamlit run app.py
 
----
 
-## 🏆 Recognition Goals  
-This project demonstrates how **Agentic AI** + **IBM watsonx Orchestrate** can:  
-- Reduce industrial water wastage 🌊  
-- Automate maintenance with zero downtime ⚙️  
-- Inspire scalable, sustainable infrastructure 🌍  
+Enter your parameters:
 
----
+Vibration
 
-### 🪄 License  
-© 2025 AquaNeuraX Team | Built for the IBM watsonx Orchestrate Hackathon 💧  
+Temperature
 
----
+Motor Current
+
+Then PumpGuard AI outputs:
+
+🟢🟠🔴 Pump Status
+
+📈 Failure Risk Probability
+
+🛠 Maintenance Suggestions
+
+📦 Installation (Σ Simple)
+
+Install required libraries:
+
+pip install -r requirements.txt
+
+
+Requirements:
+
+streamlit
+scikit-learn
+pandas
+numpy
+joblib
+
+
+(No external API needed ✔)
+(No internet dependency ✔)
+
+🎨 UI Highlights
+
+⚡ Minimal & fast
+
+🔢 Easy numeric inputs
+
+🟩🟧🟥 Color-coded output
+
+🛠 Clear maintenance advice
+
+🎯 Industrial-ready
+
+🚀 Deploy to Streamlit Cloud
+
+Push your project folder to GitHub
+
+Go to https://streamlit.io/cloud
+
+Choose your repo
+
+Click Deploy
+
+Boom — PumpGuard AI goes live. ⚡🔥
+
+🧪 Model Training Script Summary (train_model.py)
+
+Loads CSV
+
+Encodes labels (HEALTHY/WARNING/FAIL)
+
+Scales features
+
+Trains RandomForest
+
+Saves model + scaler + metadata
+
+Simple, clean, fast. ⚙️
+
+🏆 Why PumpGuard AI?
+
+🔮 Predict pump failures earlier
+
+🛠 Reduce repair cost
+
+⚙️ Improve reliability
+
+🧠 Use AI for smart maintenance
+
+💸 Zero API cost
+
+🟢 Works even offline
+
+👨‍💻 Developer (Σ Authority Mode)
+
+Built with precision and intelligence by Tenet Σ
+ML • Data Science • AI Systems • Industrial Automation
