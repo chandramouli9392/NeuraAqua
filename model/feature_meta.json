@@ -1,0 +1,12 @@
+{
+  "features": [
+    "vibration",
+    "temperature",
+    "current"
+  ],
+  "label_map": {
+    "HEALTHY": 0,
+    "WARNING": 1,
+    "CRITICAL": 2
+  }
+}
