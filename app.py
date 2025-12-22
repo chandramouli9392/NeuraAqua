@@ -58,7 +58,8 @@ Provide:
 """
 
     try:
-        from google import generativeai as genai
+      import google.generativeai as genai
+
         genai.configure(api_key=api_key)
         gmodel = genai.GenerativeModel("gemini-pro")
         response = gmodel.generate_content(prompt)
@@ -230,4 +231,5 @@ with st.sidebar:
         )
 
     st.markdown("— PumpGuard AI by Tenet Σ")
+
 
