@@ -15,7 +15,10 @@ SCALER_PATH = f"{MODEL_DIR}/scaler.pkl"
 META_PATH = f"{MODEL_DIR}/feature_meta.json"
 
 if not (os.path.exists(MODEL_PATH) and os.path.exists(SCALER_PATH) and os.path.exists(META_PATH)):
-    st.error("❌ Model files missing. Please run train_model.py and ensure /model contains: pump_model.pkl, scaler.pkl, feature_meta.json")
+    st.error(
+        "❌ Model files missing. Please run train_model.py and ensure /model contains:\n"
+        "pump_model.pkl, scaler.pkl, feature_meta.json"
+    )
     st.stop()
 
 model = joblib.load(MODEL_PATH)
@@ -26,57 +29,63 @@ label_map = meta["label_map"]
 inv_label_map = {v: k for k, v in label_map.items()}
 
 # ---------------------------------------------------------
-# GEMINI AI HYPOTHESIS GENERATOR
+# OPENAI AI HYPOTHESIS GENERATOR
 # ---------------------------------------------------------
 def generate_hypothesis(vibration, temperature, current, status, risk):
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = os.getenv("OPENAI_API_KEY")
 
     if not api_key:
         return (
-            "⚠ Gemini API key missing.\n"
+            "⚠ OpenAI API key missing.\n\n"
             "Fallback hypothesis:\n"
             "- High vibration → misalignment or bearing wear\n"
             "- High temperature → lubrication or cooling issue\n"
             "- High current → overload or electrical fault"
         )
 
-    prompt = f"""
-You are an expert mechanical engineer diagnosing pump faults.
+    try:
+        from openai import OpenAI
 
-Inputs:
-• Vibration: {vibration} mm/s
-• Temperature: {temperature} °C
-• Motor Current: {current} A
-• Status: {status}
-• Failure Risk: {risk:.3f}
+        client = OpenAI(api_key=api_key)
+
+        prompt = f"""
+You are a senior mechanical engineer diagnosing industrial pump failures.
+
+Sensor Inputs:
+- Vibration: {vibration} mm/s
+- Temperature: {temperature} °C
+- Motor Current: {current} A
+
+ML Prediction:
+- Status: {status}
+- Failure Risk Score: {risk:.3f}
 
 Provide:
 1) Most likely root cause
 2) Mechanical reasoning
-3) 3 recommended maintenance steps
+3) 3 recommended maintenance actions
 4) Urgency level
 """
 
-    try:
-        import google.generativeai as genai
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are an expert in industrial pump diagnostics."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.3
+        )
 
-        genai.configure(api_key=api_key)
-        gmodel = genai.GenerativeModel("gemini-pro")
-        response = gmodel.generate_content(prompt)
-
-        if hasattr(response, "text") and response.text:
-            return response.text
-
-        if hasattr(response, "candidates") and response.candidates:
-            try:
-                return response.candidates[0].content.parts[0].text
-            except:
-                return str(response)
-
-        return str(response)
+        return response.choices[0].message.content
 
     except Exception as e:
-        return f"⚠ Gemini Error: {e}\n\nFallback hypothesis:\n- Inspect bearings, lubrication, cooling, and electrical load."
+        return (
+            f"⚠ OpenAI Error: {e}\n\n"
+            "Fallback hypothesis:\n"
+            "- Inspect bearings\n"
+            "- Check lubrication and cooling\n"
+            "- Verify electrical load"
+        )
 
 # ---------------------------------------------------------
 # HISTORY STATE
@@ -97,7 +106,9 @@ def add_history(v, t, c, status, risk, hypothesis):
 
 def history_df():
     if not st.session_state.history:
-        return pd.DataFrame(columns=["timestamp","vibration","temperature","current","status","risk","hypothesis"])
+        return pd.DataFrame(
+            columns=["timestamp","vibration","temperature","current","status","risk","hypothesis"]
+        )
     df = pd.DataFrame(st.session_state.history)
     df["time"] = pd.to_datetime(df["timestamp"], unit="s")
     return df
@@ -134,7 +145,10 @@ if analyze:
 
     color = {"HEALTHY":"green","WARNING":"orange","CRITICAL":"red"}.get(status, "black")
 
-    st.markdown(f"## Pump Status: <span style='color:{color}'>{status}</span>", unsafe_allow_html=True)
+    st.markdown(
+        f"## Pump Status: <span style='color:{color}'>{status}</span>",
+        unsafe_allow_html=True
+    )
     st.markdown(f"### Failure Risk Score: **{risk:.3f}**")
 
     # Hypothesis
@@ -145,13 +159,16 @@ if analyze:
     # Maintenance
     st.subheader("🔧 Maintenance Recommendations")
     recs = []
-    if vibration > 6: recs.append("• Inspect bearings & alignment (high vibration).")
-    if temperature > 70: recs.append("• Check lubrication & cooling system (overheating).")
-    if current > 12: recs.append("• Inspect motor load or electrical faults (high current).")
-    if not recs: recs.append("• No immediate issues detected — continue monitoring.")
+    if vibration > 6:
+        recs.append("• Inspect bearings & alignment (high vibration).")
+    if temperature > 70:
+        recs.append("• Check lubrication & cooling system (overheating).")
+    if current > 12:
+        recs.append("• Inspect motor load or electrical faults (high current).")
+    if not recs:
+        recs.append("• No immediate issues detected — continue monitoring.")
     st.write("\n".join(recs))
 
-    # Save history
     add_history(vibration, temperature, current, status, risk, hypothesis)
 
 # ---------------------------------------------------------
@@ -160,57 +177,54 @@ if analyze:
 st.header("📊 Graphical Analysis Dashboard")
 
 df = history_df()
+
 if df.empty:
     st.info("Perform at least one analysis to populate the dashboard.")
 else:
     import altair as alt
 
-    # Scatter Chart
+    # Scatter
     st.subheader("Vibration vs Risk")
-    scatter = (
-        alt.Chart(df)
-        .mark_circle(size=80)
-        .encode(
+    st.altair_chart(
+        alt.Chart(df).mark_circle(size=80).encode(
             x="vibration",
             y="risk",
             color="status",
-            tooltip=["time", "vibration", "temperature", "current", "status", "risk"]
-        )
-        .interactive()
+            tooltip=["time","vibration","temperature","current","status","risk"]
+        ).interactive(),
+        use_container_width=True
     )
-    st.altair_chart(scatter, use_container_width=True)
 
     # Time Series
     st.subheader("Risk Over Time")
-    line = (
-        alt.Chart(df)
-        .mark_line(point=True)
-        .encode(
+    st.altair_chart(
+        alt.Chart(df).mark_line(point=True).encode(
             x="time:T",
             y="risk:Q",
             color="status:N",
-            tooltip=["time", "risk", "status"]
-        )
-        .interactive()
+            tooltip=["time","risk","status"]
+        ).interactive(),
+        use_container_width=True
     )
-    st.altair_chart(line, use_container_width=True)
 
     # Histogram
     st.subheader("Risk Distribution")
-    hist = (
-        alt.Chart(df)
-        .mark_bar()
-        .encode(
+    st.altair_chart(
+        alt.Chart(df).mark_bar().encode(
             alt.X("risk:Q", bin=alt.Bin(maxbins=12)),
             y="count()",
-            color="status:N",
-        )
+            color="status:N"
+        ),
+        use_container_width=True
     )
-    st.altair_chart(hist, use_container_width=True)
 
-    # History Table
+    # Table
     st.subheader("History Table")
-    status_filter = st.multiselect("Filter by status", df["status"].unique(), default=df["status"].unique())
+    status_filter = st.multiselect(
+        "Filter by status",
+        df["status"].unique(),
+        default=df["status"].unique()
+    )
     st.dataframe(df[df["status"].isin(status_filter)], use_container_width=True)
 
 # ---------------------------------------------------------
@@ -231,6 +245,3 @@ with st.sidebar:
         )
 
     st.markdown("— PumpGuard AI by Tenet Σ")
-
-
-
